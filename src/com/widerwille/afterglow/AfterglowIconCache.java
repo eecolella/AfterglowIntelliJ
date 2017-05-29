@@ -83,22 +83,22 @@ public class AfterglowIconCache implements ApplicationComponent
 			return AfterglowThemeManager.DIRECTORY;
 
 		// Generate the lookup into the cache
-		String lookup = getLookup(file, flags);
+//		String lookup = getLookup(file, flags);
 
-		if(lookup == null)
-			return AfterglowThemeManager.getIcon(file);
+//		if(lookup == null)
+//			return AfterglowThemeManager.getIcon(file);
 
 
 		// Retrieve the actual icon
-		Icon result = fileCache.get(lookup);
+//		Icon result = fileCache.get(lookup);
 
-		if(result == null)
-		{
-			result = AfterglowThemeManager.getIcon(file);
+//		if(result == null)
+//		{
+Icon			result = AfterglowThemeManager.getIcon(file);
 
-			if(result != null)
-				fileCache.put(lookup, result);
-		}
+//			if(result != null)
+//				fileCache.put(lookup, result);
+//		}
 
 		return result;
 	}

@@ -366,6 +366,7 @@ public class AfterglowTheme
 		private ThemeIcon icon = null;
 		private String name = null;
 		private Set<String> extensions = new HashSet<>();
+		private Set<String> forceExtensions = new HashSet<>();
 		private Set<String> types = new HashSet<>();
 		private Set<String> overrides = new HashSet<>();
 		private Set<String> defaults = new HashSet<>();
@@ -379,9 +380,16 @@ public class AfterglowTheme
 				name = nameElement.getAsString().toLowerCase();
 
 			JsonArray extensions = override.getAsJsonArray("extensions");
+			JsonArray forceExtensions = override.getAsJsonArray("forceExtensions");
 			JsonArray types = override.getAsJsonArray("types");
 			JsonArray overrides = override.getAsJsonArray("overrides");
 			JsonArray defaults = override.getAsJsonArray("defaults");
+
+			if(forceExtensions != null)
+			{
+				for(int i = 0; i < forceExtensions.size(); i++)
+					this.forceExtensions.add(forceExtensions.get(i).getAsString().toLowerCase());
+			}
 
 			if(extensions != null)
 			{
@@ -435,23 +443,44 @@ public class AfterglowTheme
 			if(extensions.contains(file.getExtension()))
 				return true;
 
+            boolean lookup = false;
+            for (String s : forceExtensions) {
+                if (file.getName().contains(s))
+                    lookup = true;
+            }
+            if(lookup) return true;
+
 			return false;
 		}
-		boolean IsBetterMatch(@NotNull Override other, @NotNull File file)
+		boolean IsBetterMatch(@NotNull Override currentBest, @NotNull File file)
 		{
+            boolean lookup1 = false;
+            for (String s : forceExtensions) {
+                if (file.getName().contains(s))
+                    lookup1 = true;
+            }
+            if(lookup1) return true;
+
+            boolean lookup2 = false;
+            for (String s : currentBest.forceExtensions) {
+                if (file.getName().contains(s))
+                    lookup2 = true;
+            }
+            if(lookup2) return false;
+
 			if(name != null && name.equalsIgnoreCase(file.getName()))
 				return true;
-			if(other.name != null && other.name.equalsIgnoreCase(file.getName()))
+			if(currentBest.name != null && currentBest.name.equalsIgnoreCase(file.getName()))
 				return false;
 
 			if(extensions.contains(file.getExtension()))
 				return true;
-			if(other.extensions.contains(file.getExtension()))
+			if(currentBest.extensions.contains(file.getExtension()))
 				return false;
 
 			if(types.contains(file.getType()))
 				return true;
-			if(other.types.contains(file.getType()))
+			if(currentBest.types.contains(file.getType()))
 				return false;
 
 			return true; // Only extensions are left now, so both are an equally good match
